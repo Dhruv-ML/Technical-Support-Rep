@@ -17,7 +17,7 @@ st.markdown("""
 st.title("Technical Support Representative Talent Pool")
 
 # ---------------- Load CSV ----------------
-df = pd.read_csv("Desktop/Technical Supp.csv", encoding="latin1")
+df = pd.read_csv("Technical Supp.csv", encoding="latin1")
 
 # ---------------- Prepare data ----------------
 # Coerce numeric fields
