@@ -6,18 +6,18 @@ import altair as alt
 # ---------------- Page setup ----------------
 st.set_page_config(page_title="Technical Support Representative Talent Pool", layout="wide")
 
-# Widen sidebar & prevent slider labels from clipping
+# Compact sidebar, prevent slider labels from clipping
 st.markdown("""
 <style>
-/* Make the sidebar wider (tweak widths as needed) */
-[data-testid="stSidebar"] { min-width: 480px; max-width: 560px; }
+/* Sidebar width — compact but still readable */
+[data-testid="stSidebar"] { min-width: 320px; max-width: 360px; }
 
-/* Give sliders room and prevent clipping of end labels */
-[data-testid="stSidebar"] [data-baseweb="slider"] { padding-right: 24px; }
+/* Let slider labels show fully */
+[data-testid="stSidebar"] [data-baseweb="slider"] { padding-right: 20px; }
 [data-testid="stSidebar"] [data-baseweb="slider"] > div { overflow: visible; }
 
-/* Optional: slightly smaller label font inside sliders */
-[data-testid="stSidebar"] [data-baseweb="slider"] span { font-size: 0.95rem; }
+/* Optional: slightly smaller slider label font */
+[data-testid="stSidebar"] [data-baseweb="slider"] span { font-size: 0.9rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -27,7 +27,6 @@ st.title("Technical Support Representative Talent Pool")
 df = pd.read_csv("Technical Supp.csv", encoding="latin1")
 
 # ---------------- Prepare data ----------------
-# Coerce numeric fields
 df["Total IT Experience"] = pd.to_numeric(df["Total IT Experience"], errors="coerce")
 df["Troubleshooting Experience"] = pd.to_numeric(df["Troubleshooting Experience"], errors="coerce")
 
@@ -56,7 +55,6 @@ df["GameFilmYN"] = np.where(
 cities    = ["All"] + sorted(df["City"].dropna().astype(str).unique().tolist())
 companies = ["All"] + sorted(df["Last Company"].dropna().astype(str).unique().tolist())
 
-# Numeric maxima (fallbacks if empty)
 max_it  = int(np.nanmax(df["Total IT Experience"])) if df["Total IT Experience"].notna().any() else 35
 max_tr  = int(np.nanmax(df["Troubleshooting Experience"])) if df["Troubleshooting Experience"].notna().any() else 35
 max_win = int(np.nanmax(df[win_col])) if df[win_col].notna().any() else 10
@@ -69,10 +67,8 @@ ss.setdefault("city", "All")
 ss.setdefault("company", "All")
 ss.setdefault("active", "All")
 ss.setdefault("game", "All")
-# Range sliders for X/Y (axes fields)
 ss.setdefault("it_range", (0, max_it))
 ss.setdefault("tr_range", (0, max_tr))
-# Tech ranges
 ss.setdefault("win_range", (0, max_win))
 ss.setdefault("net_range", (0, max_net))
 ss.setdefault("m36_range", (0, max_m36))
@@ -81,7 +77,6 @@ ss.setdefault("m36_range", (0, max_m36))
 with st.sidebar:
     st.subheader("Filters")
 
-    # Clear all filters
     if st.button("Clear all filters"):
         ss.city = "All"
         ss.company = "All"
@@ -94,47 +89,18 @@ with st.sidebar:
         ss.m36_range = (0, max_m36)
         st.rerun()
 
-    # Dropdowns
     ss.city = st.selectbox("City", options=cities, index=(cities.index(ss.city) if ss.city in cities else 0))
     ss.company = st.selectbox("Last Company", options=companies, index=(companies.index(ss.company) if ss.company in companies else 0))
 
-    # Radios
     ss.active = st.radio("Actively Looking", options=["All", "Yes", "No"], index=["All","Yes","No"].index(ss.active))
     ss.game   = st.radio("Gaming/Films Experience", options=["All", "Yes", "No"], index=["All","Yes","No"].index(ss.game))
 
-    # Range sliders for X/Y metrics (top)
-    ss.it_range = st.slider(
-        "Total IT Experience (years)",
-        min_value=0, max_value=max_it,
-        value=tuple(ss.it_range),
-        step=1
-    )
-    ss.tr_range = st.slider(
-        "Troubleshooting Experience (years)",
-        min_value=0, max_value=max_tr,
-        value=tuple(ss.tr_range),
-        step=1
-    )
+    ss.it_range = st.slider("Total IT Experience (years)", min_value=0, max_value=max_it, value=tuple(ss.it_range), step=1)
+    ss.tr_range = st.slider("Troubleshooting Experience (years)", min_value=0, max_value=max_tr, value=tuple(ss.tr_range), step=1)
 
-    # Tech skill range sliders (min–max in one slider)
-    ss.win_range = st.slider(
-        "Microsoft Windows Server Exp",
-        min_value=0, max_value=max_win,
-        value=tuple(ss.win_range),
-        step=1
-    )
-    ss.net_range = st.slider(
-        "Network Management Exp",
-        min_value=0, max_value=max_net,
-        value=tuple(ss.net_range),
-        step=1
-    )
-    ss.m36_range = st.slider(
-        "Microsoft 365 Exp",
-        min_value=0, max_value=max_m36,
-        value=tuple(ss.m36_range),
-        step=1
-    )
+    ss.win_range = st.slider("Microsoft Windows Server Exp", min_value=0, max_value=max_win, value=tuple(ss.win_range), step=1)
+    ss.net_range = st.slider("Network Management Exp", min_value=0, max_value=max_net, value=tuple(ss.net_range), step=1)
+    ss.m36_range = st.slider("Microsoft 365 Exp", min_value=0, max_value=max_m36, value=tuple(ss.m36_range), step=1)
 
 # ---------------- Apply filters ----------------
 it_lo, it_hi   = ss.it_range
