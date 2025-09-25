@@ -8,7 +8,7 @@ st.set_page_config(page_title="Technical Support Representative Talent Pool", la
 st.title("Technical Support Representative Talent Pool")
 
 # ---------- Load CSV ----------
-df = pd.read_csv("Desktop/Technical Supp.csv", encoding="latin1")
+df = pd.read_csv("Technical Supp.csv", encoding="latin1")
 
 # ---------- Prepare data ----------
 df["Total IT Experience"] = pd.to_numeric(df["Total IT Experience"], errors="coerce")
